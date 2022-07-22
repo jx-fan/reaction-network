@@ -122,7 +122,7 @@ class PathwaySolver(Solver):
                 self.cost_function.evaluate(r) for r in intermediate_rxns
             ]
             for r, c in zip(intermediate_rxns, intermediate_costs):
-                if r not in reactions:
+                if r.normalized_repr not in [rxn.normalized_repr for rxn in reactions]:
                     reactions.append(r)
                     costs.append(c)
 

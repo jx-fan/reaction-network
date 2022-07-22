@@ -490,19 +490,23 @@ class BasicReaction(Reaction):
         return BasicReaction(reactant_comps + product_comps, r_coefs + p_coefs)
 
     @staticmethod
-    def _str_from_formulas(coeffs, formulas, tol=TOLERANCE) -> str:
-        reactant_str = []
-        product_str = []
+    def _str_from_formulas(coeffs, formulas, tol=TOLERANCE, sort=True) -> str:
+        reactant_dict = {}
+        product_dict = {}
         for amt, formula in zip(coeffs, formulas):
             if abs(amt + 1) < tol:
-                reactant_str.append(formula)
+                reactant_dict[formula] = ""
             elif abs(amt - 1) < tol:
-                product_str.append(formula)
+                product_dict[formula] = ""
             elif amt < -tol:
-                reactant_str.append(f"{-amt:.4g} {formula}")
+                reactant_dict[formula] = f"{-amt:.4g}"
             elif amt > tol:
-                product_str.append(f"{amt:.4g} {formula}")
-
+                product_dict[formula] = f"{amt:.4g}"
+        if sort:
+            reactant_dict = {k: v for k, v in sorted(reactant_dict.items(), key=lambda item: item[0])}
+            product_dict = {k: v for k, v in sorted(product_dict.items(), key=lambda item: item[0])}
+        reactant_str = [" ".join([str(amt), formula]) if amt else formula for formula, amt in reactant_dict.items()]
+        product_str = [" ".join([str(amt), formula]) if amt else formula for formula, amt in product_dict.items()]
         return " + ".join(reactant_str) + " -> " + " + ".join(product_str)
 
     @classmethod
